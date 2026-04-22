@@ -15,10 +15,33 @@
 
 set -euo pipefail
 
-# Resolve the absolute path of the repo root from the script's own location.
-# NEVER use $PWD — when piped via `curl | bash`, $PWD is whatever the user's
-# current directory is, which can be $HOME, creating circular self-symlinks.
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# ---------------------------------------------------------------------------
+# Resolve repo root — handles two invocation modes:
+#
+#   1. Direct:  bash /path/to/install.sh
+#      BASH_SOURCE[0] is set → derive SCRIPT_DIR from it.
+#
+#   2. Piped:   curl -fsSL .../install.sh | bash
+#      BASH_SOURCE[0] is UNBOUND (bash reads from stdin, not a file).
+#      Clone the repo to ~/.dotfiles and use that as SCRIPT_DIR.
+# ---------------------------------------------------------------------------
+DOTFILES_REPO="https://github.com/Den1zzDev/Den1zzfiles.git"
+DOTFILES_LOCAL="$HOME/.dotfiles"
+
+_src="${BASH_SOURCE[0]:-}"
+if [[ -n "$_src" && "$_src" != "bash" ]]; then
+    SCRIPT_DIR="$(cd "$(dirname "$_src")" && pwd)"
+else
+    echo "[INFO] Piped execution detected — cloning repo to $DOTFILES_LOCAL ..."
+    if [[ -d "$DOTFILES_LOCAL/.git" ]]; then
+        echo "[INFO] Repo already exists, pulling latest..."
+        git -C "$DOTFILES_LOCAL" pull --ff-only
+    else
+        git clone "$DOTFILES_REPO" "$DOTFILES_LOCAL"
+    fi
+    SCRIPT_DIR="$DOTFILES_LOCAL"
+fi
+unset _src
 
 DRY_RUN=0
 if [[ "${1:-}" == "--dry-run" ]]; then
