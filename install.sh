@@ -35,6 +35,9 @@ echo -e "\033[1;33m║  It will be rewritten when the maintainer (Den1zz) has th
 echo -e "\033[1;33m║  time to properly do so. Until then: proceed with caution.     ║\033[0m"
 echo -e "\033[1;31m╚══════════════════════════════════════════════════════════════════╝\033[0m"
 echo ""
+# Reconnect stdin to the terminal so the prompt works even when piped (e.g. curl | bash).
+# Simple `read < /dev/tty` is insufficient; exec is required to fully reopen stdin.
+exec < /dev/tty
 read -rp "Do you understand the risks and wish to continue? [y/N] " confirm
 if [[ "${confirm,,}" != "y" ]]; then
     echo "Aborted."
