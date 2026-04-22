@@ -35,10 +35,17 @@ echo -e "\033[1;33m║  It will be rewritten when the maintainer (Den1zz) has th
 echo -e "\033[1;33m║  time to properly do so. Until then: proceed with caution.     ║\033[0m"
 echo -e "\033[1;31m╚══════════════════════════════════════════════════════════════════╝\033[0m"
 echo ""
-# Reconnect stdin to the terminal so the prompt works even when piped (e.g. curl | bash).
-# Simple `read < /dev/tty` is insufficient; exec is required to fully reopen stdin.
-exec < /dev/tty
-read -rp "Do you understand the risks and wish to continue? [y/N] " confirm
+# Open /dev/tty as fd 3 (a separate descriptor) so we can read interactive
+# input without touching stdin (fd 0), which is the pipe carrying the rest
+# of this script in a `curl | bash` invocation. Using `exec < /dev/tty` is
+# wrong — it replaces fd 0 entirely, causing bash to lose the rest of the script.
+if ! exec 3</dev/tty 2>/dev/null; then
+    echo "ERROR: Cannot open /dev/tty for interactive input. Run the script directly (download it first), not via pipe."
+    exit 1
+fi
+echo -n "Do you understand the risks and wish to continue? [y/N] "
+read -r confirm <&3
+exec 3>&-  # Close fd 3 — stdin (the script pipe) is untouched.
 if [[ "${confirm,,}" != "y" ]]; then
     echo "Aborted."
     exit 0
