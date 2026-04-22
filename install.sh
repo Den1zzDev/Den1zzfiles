@@ -15,6 +15,11 @@
 
 set -euo pipefail
 
+# Resolve the absolute path of the repo root from the script's own location.
+# NEVER use $PWD — when piped via `curl | bash`, $PWD is whatever the user's
+# current directory is, which can be $HOME, creating circular self-symlinks.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 DRY_RUN=0
 if [[ "${1:-}" == "--dry-run" ]]; then
     DRY_RUN=1
@@ -199,7 +204,7 @@ done
 # ------------------------------------------------------------------------------
 log_info "Symlinking Dotfiles..."
 
-CONFIG_SRC="$PWD/.config"
+CONFIG_SRC="$SCRIPT_DIR/.config"
 CONFIG_DEST="$HOME/.config"
 
 run mkdir -p "$CONFIG_DEST"
@@ -231,7 +236,7 @@ if [[ -d "$CONFIG_SRC" ]]; then
         fi
     done
 else
-    log_err ".config directory not found in the current workspace ($PWD/.config)."
+    log_err ".config directory not found in the repo (expected: $SCRIPT_DIR/.config)."
 fi
 
 # Change default shell to fish
