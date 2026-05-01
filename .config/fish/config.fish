@@ -28,25 +28,25 @@ set -gx MANPAGER "sh -c 'col -bx | bat -l man -p'"
 # ──────────────────────────────────────────────
 # FISH SYNTAX-HIGHLIGHT COLORS  (Catppuccin Mocha)
 # ──────────────────────────────────────────────
-set -g fish_color_normal         cdd6f4          # text
-set -g fish_color_command        89b4fa          # commands  → blue
-set -g fish_color_keyword        cba6f7          # keywords  → mauve
-set -g fish_color_quote          a6e3a1          # strings   → green
-set -g fish_color_redirection    f5c2e7          # redirects → pink
-set -g fish_color_end            fab387          # semicolon → peach
-set -g fish_color_error          f38ba8          # errors    → red
-set -g fish_color_param          eba0ac          # params    → maroon
-set -g fish_color_comment        9399b2          # comments  → overlay2
-set -g fish_color_operator       89dceb          # operators → sky
-set -g fish_color_escape         f5c2e7          # escapes   → pink
-set -g fish_color_autosuggestion 6c7086          # ghost text → overlay0
-set -g fish_color_valid_path     --underline
-set -g fish_color_match          --background=313244
-set -g fish_color_search_match   --background=313244
-set -g fish_pager_color_prefix   cba6f7 --bold --underline
-set -g fish_pager_color_completion cdd6f4
-set -g fish_pager_color_description 6c7086 --italics
-set -g fish_pager_color_selected_background --background=313244
+set -U fish_color_normal         cdd6f4          # text
+set -U fish_color_command        cba6f7          # commands  → mauve
+set -U fish_color_keyword        cba6f7          # keywords  → mauve
+set -U fish_color_quote          a6e3a1          # strings   → green
+set -U fish_color_redirection    f5c2e7          # redirects → pink
+set -U fish_color_end            fab387          # semicolon → peach
+set -U fish_color_error          f38ba8          # errors    → red
+set -U fish_color_param          cdd6f4          # params    → text
+set -U fish_color_comment        9399b2          # comments  → overlay2
+set -U fish_color_operator       89dceb          # operators → sky
+set -U fish_color_escape         f5c2e7          # escapes   → pink
+set -U fish_color_autosuggestion 6c7086          # ghost text → overlay0
+set -U fish_color_valid_path     --underline
+set -U fish_color_match          --background=313244
+set -U fish_color_search_match   --background=313244
+set -U fish_pager_color_prefix   cba6f7 --bold --underline
+set -U fish_pager_color_completion cdd6f4
+set -U fish_pager_color_description 6c7086 --italics
+set -U fish_pager_color_selected_background --background=313244
 
 # ──────────────────────────────────────────────
 # INTERACTIVE SESSION
