@@ -8,13 +8,13 @@ set -gx TERM     xterm-256color
 # bat → Catppuccin Mocha theme everywhere
 set -gx BAT_THEME "Catppuccin Mocha"
 
-# fzf → match Catppuccin Frappé palette + bat preview
+# fzf → match Catppuccin Mocha palette + bat preview
 set -gx FZF_DEFAULT_OPTS "\
   --height=50% --layout=reverse --border=rounded --info=inline \
   --prompt='  ' --pointer='▶' --marker='✓' \
-  --color=bg+:#414559,bg:#303446,spinner:#f2d5cf,hl:#e78284 \
-  --color=fg:#c6d0f5,header:#e78284,info:#ca9ee6,pointer:#f2d5cf \
-  --color=marker:#f2d5cf,fg+:#c6d0f5,prompt:#ca9ee6,hl+:#e78284 \
+  --color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc,hl:#f38ba8 \
+  --color=fg:#cdd6f4,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc \
+  --color=marker:#f5e0dc,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8 \
   --preview='bat --style=numbers --color=always {}' \
   --preview-window='right:50%:wrap'"
 set -gx FZF_DEFAULT_COMMAND "fd --type f --hidden --follow --exclude .git"
@@ -26,27 +26,27 @@ set -gx LESS "-R --use-color"
 set -gx MANPAGER "sh -c 'col -bx | bat -l man -p'"
 
 # ──────────────────────────────────────────────
-# FISH SYNTAX-HIGHLIGHT COLORS  (Catppuccin Frappé)
+# FISH SYNTAX-HIGHLIGHT COLORS  (Catppuccin Mocha)
 # ──────────────────────────────────────────────
-set -g fish_color_normal         c6d0f5          # text
-set -g fish_color_command        8caaee          # commands  → blue
-set -g fish_color_keyword        ca9ee6          # keywords  → mauve
-set -g fish_color_quote          a6d189          # strings   → green
-set -g fish_color_redirection    f4b8e4          # redirects → pink
-set -g fish_color_end            f2d5cf          # semicolon → rosewater
-set -g fish_color_error          e78284          # errors    → red
-set -g fish_color_param          c6d0f5          # params    → text
-set -g fish_color_comment        949cbb          # comments  → overlay2
-set -g fish_color_operator       99d1db          # operators → sky
-set -g fish_color_escape         f4b8e4          # escapes   → pink
-set -g fish_color_autosuggestion 737994          # ghost text → overlay1
+set -g fish_color_normal         cdd6f4          # text
+set -g fish_color_command        89b4fa          # commands  → blue
+set -g fish_color_keyword        cba6f7          # keywords  → mauve
+set -g fish_color_quote          a6e3a1          # strings   → green
+set -g fish_color_redirection    f5c2e7          # redirects → pink
+set -g fish_color_end            fab387          # semicolon → peach
+set -g fish_color_error          f38ba8          # errors    → red
+set -g fish_color_param          eba0ac          # params    → maroon
+set -g fish_color_comment        9399b2          # comments  → overlay2
+set -g fish_color_operator       89dceb          # operators → sky
+set -g fish_color_escape         f5c2e7          # escapes   → pink
+set -g fish_color_autosuggestion 6c7086          # ghost text → overlay0
 set -g fish_color_valid_path     --underline
-set -g fish_color_match          --background=414559
-set -g fish_color_search_match   --background=414559
-set -g fish_pager_color_prefix   ca9ee6 --bold --underline
-set -g fish_pager_color_completion c6d0f5
-set -g fish_pager_color_description 737994 --italics
-set -g fish_pager_color_selected_background --background=414559
+set -g fish_color_match          --background=313244
+set -g fish_color_search_match   --background=313244
+set -g fish_pager_color_prefix   cba6f7 --bold --underline
+set -g fish_pager_color_completion cdd6f4
+set -g fish_pager_color_description 6c7086 --italics
+set -g fish_pager_color_selected_background --background=313244
 
 # ──────────────────────────────────────────────
 # INTERACTIVE SESSION
@@ -272,7 +272,6 @@ if status is-interactive
     abbr nrt  "npm run test"
     abbr nrc  "npm run check"
     abbr nrp  "npm run preview"
-    abbr npx  "npx"
 
     abbr pi   "pnpm install"
     abbr pa   "pnpm add"
@@ -325,7 +324,7 @@ if status is-interactive
     abbr cl     "clear"
     abbr reload "source ~/.config/fish/config.fish"
     abbr fishrc "$EDITOR ~/.config/fish/config.fish"
-    abbr path   "echo $PATH | tr ':' '\n'"
+    abbr path   "printf '%s\n' \$PATH"
     abbr ports  "ss -tulnp"
     abbr myip   "curl -s ifconfig.me"
     abbr weather "curl -s wttr.in"
@@ -342,8 +341,11 @@ if status is-interactive
 
     # up N: go up N directories
     function up --description "Go up N directories"
-        set n (math (count $argv) > 0 ? $argv[1] : 1)
-        set path ""
+        set -l n 1
+        if test (count $argv) -gt 0
+            set n $argv[1]
+        end
+        set -l path ""
         for i in (seq 1 $n)
             set path "../$path"
         end
@@ -399,7 +401,19 @@ if status is-interactive
         and ssh $host
     end
 
+    # twitch: watch a Twitch stream via streamlink + mpv
+    function twitch --description "Watch a Twitch stream in mpv"
+        streamlink --player "mpv" https://www.twitch.tv/$argv[1] best
+    end
+
 end
 # ╚══════════════════════════════════════════════════════════════╝
 
 fish_add_path "$HOME/.local/bin"
+if status is-interactive
+    if not pgrep -xu $USER ssh-agent >/dev/null
+        eval (ssh-agent -c)
+        set -Ux SSH_AUTH_SOCK $SSH_AUTH_SOCK
+        set -Ux SSH_AGENT_PID $SSH_AGENT_PID
+    end
+end
